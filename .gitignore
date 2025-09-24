@@ -37,12 +37,20 @@ env/
 .DS_Store
 Thumbs.db
 
-# Project specific
+# Project specific - keep structure but ignore generated content
 uploads/*.csv
 uploads/*.json
 *.png
 *.log
 
+# Keep uploads directory structure
+!uploads/.gitkeep
+
 # Sensitive data
 config.ini
 .env
+
+# Local development
+*.db
+*.sqlite
+*.sqlite3
