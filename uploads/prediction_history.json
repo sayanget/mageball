@@ -1,0 +1,72 @@
+[
+  {
+    "timestamp": "2025-09-24T00:16:22.865840",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 20,
+      "compute_time": "4.08 秒"
+    },
+    "predictions": [
+      {
+        "n1": 15,
+        "n2": 18,
+        "n3": 25,
+        "n4": 45,
+        "n5": 64,
+        "megaball": 4
+      },
+      {
+        "n1": 17,
+        "n2": 34,
+        "n3": 38,
+        "n4": 53,
+        "n5": 56,
+        "megaball": 22
+      },
+      {
+        "n1": 18,
+        "n2": 24,
+        "n3": 29,
+        "n4": 56,
+        "n5": 59,
+        "megaball": 13
+      },
+      {
+        "n1": 16,
+        "n2": 31,
+        "n3": 37,
+        "n4": 38,
+        "n5": 69,
+        "megaball": 25
+      },
+      {
+        "n1": 15,
+        "n2": 20,
+        "n3": 21,
+        "n4": 48,
+        "n5": 63,
+        "megaball": 20
+      }
+    ],
+    "data_rows_used": 824,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  }
+]

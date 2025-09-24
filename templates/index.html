@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Millions 彩票分析器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
+        <h1 class="text-2xl font-bold mb-4 text-center">Mega Millions 彩票分析器</h1>
+        
+        <!-- 导航链接 -->
+        <div class="mb-6 text-center">
+            <a href="/prediction_history" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">查看历史预测回测</a>
+        </div>
+        
+        <!-- 最新开奖信息和倒计时 -->
+        {% if latest_draw_info %}
+        <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-semibold text-blue-800">开奖信息</h2>
+                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                    历史数据: {{ latest_draw_info.total_records }} 条记录
+                </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 上期开奖号码 -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-medium mb-2 text-gray-800">上期开奖结果</h3>
+                    <p class="text-sm text-gray-600 mb-2">开奖日期: {{ latest_draw_info.draw_date }}</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium text-gray-700">中奖号码:</span>
+                        {% set numbers = latest_draw_info.winning_numbers.split() %}
+                        {% for number in numbers %}
+                            <span class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white text-sm font-bold rounded-full">{{ number }}</span>
+                        {% endfor %}
+                        <span class="inline-flex items-center justify-center w-8 h-8 bg-red-500 text-white text-sm font-bold rounded-full">{{ latest_draw_info.mega_ball }}</span>
+                    </div>
+                </div>
+                
+                <!-- 下期开奖倒计时 -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-medium mb-2 text-gray-800">下期开奖倒计时</h3>
+                    <div id="countdown" class="text-2xl font-bold text-red-600 mb-2"></div>
+                    <p class="text-sm text-gray-600">下期开奖时间: <span id="next-draw-time">{{ latest_draw_info.next_draw_date.strftime('%Y-%m-%d %H:%M') }}</span></p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- 文件上传和参数输入 -->
+        <form method="post" enctype="multipart/form-data" class="mb-6">
+            <div class="mb-4">
+                <label for="csv_file" class="block text-sm font-medium text-gray-700">上传 Mega Millions CSV 文件（可选）</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <p class="text-sm text-gray-500 mt-1">不上传文件将自动从在线数据源加载历史数据。</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label for="window" class="block text-sm font-medium text-gray-700">回测窗口大小</label>
+                    <input type="number" name="window" id="window" value="200" min="50" max="500" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="n_tickets" class="block text-sm font-medium text-gray-700">模拟彩票数量</label>
+                    <input type="number" name="n_tickets" id="n_tickets" value="10" min="5" max="20" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="step" class="block text-sm font-medium text-gray-700">迭代步长</label>
+                    <input type="number" name="step" id="step" value="20" min="10" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">开始分析</button>
+        </form>
+
+        <!-- 错误消息 -->
+        {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <!-- 结果展示 -->
+        {% if result %}
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-2">分析结果</h2>
+                <p><strong>加载的行数：</strong> {{ result.rows_loaded }}</p>
+                <p><strong>计算时间：</strong> {{ result.compute_time }}</p>
+
+                <h3 class="text-lg font-semibold mt-4 mb-2">回测摘要</h3>
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 px-4 py-2">白球匹配数</th>
+                            <th class="border border-gray-300 px-4 py-2">Mega Ball 匹配</th>
+                            <th class="border border-gray-300 px-4 py-2">次数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in result.summary %}
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.white_matches }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.pb_match }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h3 class="text-lg font-semibold mt-4 mb-2">前 20 名号码排名</h3>
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 px-4 py-2">号码</th>
+                            <th class="border border-gray-300 px-4 py-2">分数</th>
+                            <th class="border border-gray-300 px-4 py-2">类型</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in result.top_numbers %}
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.number }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ '%.5f' % row.score }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.type }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h3 class="text-lg font-semibold mt-4 mb-2">推荐号码</h3>
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 px-4 py-2">n1</th>
+                            <th class="border border-gray-300 px-4 py-2">n2</th>
+                            <th class="border border-gray-300 px-4 py-2">n3</th>
+                            <th class="border border-gray-300 px-4 py-2">n4</th>
+                            <th class="border border-gray-300 px-4 py-2">n5</th>
+                            <th class="border border-gray-300 px-4 py-2">Mega Ball</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in result.picks %}
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.n1 }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.n2 }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.n3 }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.n4 }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.n5 }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ row.megaball }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if picks_file %}
+                    <a href="/download/{{ picks_file }}" class="mt-4 inline-block bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">下载推荐号码 CSV</a>
+                {% endif %}
+            </div>
+
+            <!-- Chart.js 图表 -->
+            {% if chart_data %}
+                <h3 class="text-lg font-semibold mt-4 mb-2">回测匹配分布</h3>
+                <canvas id="matchChart" class="w-full h-64"></canvas>
+                <script>
+                    const ctx = document.getElementById('matchChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ chart_data.labels | tojson }},
+                            datasets: [{
+                                label: '匹配次数',
+                                data: {{ chart_data.data | tojson }},
+                                backgroundColor: {{ chart_data.backgroundColor | tojson }},
+                                borderColor: {{ chart_data.borderColor | tojson }},
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: '匹配次数' }
+                                },
+                                x: {
+                                    title: { display: true, text: '匹配类型' }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: true, position: 'top' },
+                                title: { display: true, text: 'Mega Millions 回测匹配分布 ({{ result.rows_loaded }} 行, window={{ request.form.get('window', 200) }}, n_tickets={{ request.form.get('n_tickets', 10) }}, step={{ request.form.get('step', 20) }})' }
+                            }
+                        }
+                    });
+                </script>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    <!-- 倒计时JavaScript -->
+    {% if latest_draw_info %}
+    <script>
+        function updateCountdown() {
+            const nextDrawTime = new Date('{{ latest_draw_info.next_draw_date.isoformat() }}').getTime();
+            const now = new Date().getTime();
+            const distance = nextDrawTime - now;
+            
+            if (distance > 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                let countdownText = '';
+                if (days > 0) countdownText += days + '天 ';
+                countdownText += hours.toString().padStart(2, '0') + ':';
+                countdownText += minutes.toString().padStart(2, '0') + ':';
+                countdownText += seconds.toString().padStart(2, '0');
+                
+                document.getElementById('countdown').innerHTML = countdownText;
+            } else {
+                document.getElementById('countdown').innerHTML = '开奖时间已过';
+            }
+        }
+        
+        // 立即更新一次
+        updateCountdown();
+        
+        // 每秒更新倒计时
+        setInterval(updateCountdown, 1000);
+    </script>
+    {% endif %}
+</body>
+</html>

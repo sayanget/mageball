@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史预测回测分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Mega Millions 历史预测回测分析</h1>
+        
+        <!-- 导航链接 -->
+        <div class="mb-6 text-center">
+            <a href="/" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mr-4">返回主页</a>
+            <a href="/prediction_history" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">刷新数据</a>
+        </div>
+
+        <!-- 错误消息 -->
+        {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <!-- 整体性能摘要 -->
+        {% if performance_summary and 'overall_stats' in performance_summary %}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">整体预测性能摘要</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-blue-600">{{ performance_summary.overall_stats.total_predictions }}</p>
+                    <p class="text-sm text-gray-600">总预测次数</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-green-600">{{ "%.2f"|format(performance_summary.overall_stats.avg_max_white_matches) }}</p>
+                    <p class="text-sm text-gray-600">平均最大白球命中</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-purple-600">{{ performance_summary.overall_stats.best_white_matches }}</p>
+                    <p class="text-sm text-gray-600">最佳白球命中数</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-red-600">{{ "%.4f"|format(performance_summary.overall_stats.overall_pb_hit_rate) }}</p>
+                    <p class="text-sm text-gray-600">红球命中率</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 详细回测结果 -->
+        {% if backtest_results %}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">详细回测结果</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 px-2 py-2 text-sm">预测时间</th>
+                            <th class="border border-gray-300 px-2 py-2 text-sm">策略</th>
+                            <th class="border border-gray-300 px-2 py-2 text-sm">预测白球</th>
+                            <th class="border border-gray-300 px-2 py-2 text-sm">预测红球</th>
+                            <th class="border border-gray-300 px-2 py-2 text-sm">后续开奖次数</th>
+                            <th class="border border-gray-300 px-2 py-2 text-sm">最大白球命中</th>
+                            <th class="border border-gray-300 px-2 py-2 text-sm">平均白球命中</th>
+                            <th class="border border-gray-300 px-2 py-2 text-sm">红球命中率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in backtest_results %}
+                            <tr class="{% if loop.index % 2 == 0 %}bg-gray-50{% endif %}">
+                                <td class="border border-gray-300 px-2 py-2 text-xs">{{ result.timestamp.split('T')[0] }}</td>
+                                <td class="border border-gray-300 px-2 py-2 text-xs">{{ result.strategy }}</td>
+                                <td class="border border-gray-300 px-2 py-2 text-xs">{{ result.predicted_whites|join(', ') }}</td>
+                                <td class="border border-gray-300 px-2 py-2 text-xs">{{ result.predicted_pb }}</td>
+                                <td class="border border-gray-300 px-2 py-2 text-xs">{{ result.total_subsequent_draws }}</td>
+                                <td class="border border-gray-300 px-2 py-2 text-xs font-bold 
+                                    {% if result.max_white_matches >= 3 %}text-green-600
+                                    {% elif result.max_white_matches >= 2 %}text-yellow-600
+                                    {% else %}text-red-600{% endif %}">
+                                    {{ result.max_white_matches }}
+                                </td>
+                                <td class="border border-gray-300 px-2 py-2 text-xs">{{ "%.2f"|format(result.avg_white_matches) }}</td>
+                                <td class="border border-gray-300 px-2 py-2 text-xs 
+                                    {% if result.pb_hit_rate > 0 %}text-green-600 font-bold{% endif %}">
+                                    {{ "%.4f"|format(result.pb_hit_rate) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 历史预测记录 -->
+        {% if history %}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">历史预测记录</h2>
+            <div class="space-y-4">
+                {% for record in history %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold">预测 #{{ loop.index }}</h3>
+                            <span class="text-sm text-gray-500">{{ record.timestamp.split('T')[0] }} {{ record.timestamp.split('T')[1].split('.')[0] }}</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <p><strong>策略:</strong> {{ record.strategy }}</p>
+                                <p><strong>数据行数:</strong> {{ record.data_rows_used }}</p>
+                                {% if record.additional_info.compute_time %}
+                                <p><strong>计算时间:</strong> {{ record.additional_info.compute_time }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p><strong>约束条件:</strong></p>
+                                {% if record.constraints %}
+                                    {% for key, value in record.constraints.items() %}
+                                        <p class="ml-2">{{ key }}: {{ value }}</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="ml-2">无</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p><strong>预测号码组合:</strong></p>
+                                {% for pick in record.predictions %}
+                                    <p class="ml-2 font-mono">{{ pick.n1 }}, {{ pick.n2 }}, {{ pick.n3 }}, {{ pick.n4 }}, {{ pick.n5 }} | {{ pick.megaball }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                <p>暂无历史预测记录。请先在主页进行一次预测分析。</p>
+            </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
