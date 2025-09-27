@@ -1,0 +1,45 @@
+# Render部署时忽略的文件和目录
+
+# 开发和调试文件
+bebug.py
+mb-oula.py
+mb.py
+mega_millions_analyzer.py
+math.py
+3data.html
+
+# 数据文件（会动态下载）
+*.csv
+magemw.csv
+Lottery_Mega_Millions_Winning_Numbers__Beginning_2002.csv
+
+# Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 日志文件
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Git文件
+.git/
+.gitignore
+
+# 本地上传文件夹内容（保留目录结构）
+uploads/*.csv
+uploads/*.json

@@ -2,12 +2,17 @@ version: "1"
 
 services:
   - type: web
-    name: mageball
+    name: mageball-analyzer
     runtime: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app"
+    buildCommand: "./build.sh"
+    startCommand: "python start.py"
+    plan: free
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.5
       - key: FLASK_ENV
         value: production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /
+    autoDeploy: false

@@ -781,6 +781,16 @@ def index():
 def download_file(filename):
     return send_file(filename, as_attachment=True)
 
+@app.route('/health')
+def health_check():
+    """健康检查端点"""
+    return {
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'version': '1.0.0',
+        'service': 'mageball-analyzer'
+    }
+
 @app.route('/prediction_history', methods=['GET'])
 def prediction_history():
     """显示历史预测记录和回测结果"""

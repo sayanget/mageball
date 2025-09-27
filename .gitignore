@@ -54,3 +54,15 @@ config.ini
 *.db
 *.sqlite
 *.sqlite3
+
+# Development files (不部署到生产环境)
+bebug.py
+mb-oula.py
+mb.py
+mega_millions_analyzer.py
+math.py
+3data.html
+
+# Large data files (会在线下载)
+Lottery_Mega_Millions_Winning_Numbers_Beginning_2002.csv
+magemw.csv
