@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>参数优化分析 - 红球命中率</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">参数优化分析 - 红球命中率</h1>
+        
+        <!-- 导航链接 -->
+        <div class="mb-6 text-center">
+            <a href="/" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mr-4">返回主页</a>
+            <a href="/prediction_history" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">历史预测</a>
+        </div>
+
+        <!-- 参数设置表单 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">参数设置</h2>
+            <form method="post" enctype="multipart/form-data">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <!-- 回测窗口参数 -->
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-medium mb-2 text-blue-800">回测窗口参数</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">起始值</label>
+                                <input type="number" name="window_start" value="100" min="50" max="500" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">结束值</label>
+                                <input type="number" name="window_end" value="300" min="50" max="500" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">步长</label>
+                                <input type="number" name="window_step" value="50" min="10" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 迭代步长参数 -->
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-medium mb-2 text-green-800">迭代步长参数</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">起始值</label>
+                                <input type="number" name="step_start" value="10" min="5" max="50" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">结束值</label>
+                                <input type="number" name="step_end" value="50" min="5" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">步长</label>
+                                <input type="number" name="step_step" value="10" min="5" max="50" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 其他参数 -->
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-medium mb-2 text-purple-800">其他参数</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">模拟彩票数量</label>
+                                <input type="number" name="n_tickets" value="10" min="5" max="20" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">数据文件（可选）</label>
+                                <input type="file" name="csv_file" accept=".csv" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="bg-red-500 text-white py-3 px-8 rounded-md hover:bg-red-600 text-lg font-semibold">
+                        开始参数优化分析
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 错误消息 -->
+        {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <!-- 结果展示 -->
+        {% if result %}
+            <!-- 最佳参数展示 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- 最高命中率组合 -->
+                {% if result.best_params %}
+                <div class="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4 text-center text-green-800">🏆 最高红球命中率组合</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p class="text-2xl font-bold text-green-600">{{ result.best_params.window }}</p>
+                            <p class="text-sm text-gray-600">回测窗口</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-blue-600">{{ result.best_params.step }}</p>
+                            <p class="text-sm text-gray-600">迭代步长</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-purple-600">{{ "%.4f"|format(result.best_params.pb_hit_probability) }}</p>
+                            <p class="text-sm text-gray-600">红球命中率</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-orange-600">{{ "%.2f"|format(result.best_params.performance_ratio) }}</p>
+                            <p class="text-sm text-gray-600">性能比率</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-red-600">{{ result.best_params.adjusted_window }}</p>
+                            <p class="text-sm text-gray-600">实际窗口</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- 最佳理论表现组合 -->
+                {% if result.best_theoretical_params %}
+                <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4 text-center text-purple-800">🎯 最佳理论表现组合</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p class="text-2xl font-bold text-purple-600">{{ result.best_theoretical_params.window }}</p>
+                            <p class="text-sm text-gray-600">回测窗口</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-pink-600">{{ result.best_theoretical_params.step }}</p>
+                            <p class="text-sm text-gray-600">迭代步长</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-indigo-600">{{ "%.4f"|format(result.best_theoretical_params.pb_hit_probability) }}</p>
+                            <p class="text-sm text-gray-600">红球命中率</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-red-600">{{ "%.2f"|format(result.best_theoretical_params.performance_ratio) }}</p>
+                            <p class="text-sm text-gray-600">性能比率</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-600">{{ result.best_theoretical_params.adjusted_window }}</p>
+                            <p class="text-sm text-gray-600">实际窗口</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- 分析摘要 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">分析摘要</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-4">
+                    <div>
+                        <p class="text-2xl font-bold text-blue-600">{{ result.total_combinations }}</p>
+                        <p class="text-sm text-gray-600">测试组合数</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-green-600">{{ result.data_rows }}</p>
+                        <p class="text-sm text-gray-600">数据行数</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">回测窗口范围: {{ result.parameters.window_range }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">步长范围: {{ result.parameters.step_range }}</p>
+                    </div>
+                </div>
+                
+                <!-- 说明 -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-medium mb-2">结果说明</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-start space-x-2">
+                            <span class="text-2xl">🏆</span>
+                            <div>
+                                <p class="font-semibold text-green-700">最高红球命中率组合</p>
+                                <p class="text-gray-600">实际命中红球次数最多的参数组合，追求绝对命中率。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <span class="text-2xl">🎯</span>
+                            <div>
+                                <p class="font-semibold text-purple-700">最佳理论表现组合</p>
+                                <p class="text-gray-600">相对于理论概率(1/25=0.04)表现最好的参数组合，追求相对性能。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细结果表格 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">详细结果（按红球命中率排序）</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="border border-gray-300 px-2 py-2 text-sm">排名</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">回测窗口</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">迭代步长</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">实际窗口</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">红球命中率</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">总预测次数</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">命中次数</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">性能比率</th>
+                                <th class="border border-gray-300 px-2 py-2 text-sm">计算时间(秒)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in result.optimization_results %}
+                                {% set is_best_hit_rate = (result.best_params and row.window == result.best_params.window and row.step == result.best_params.step) %}
+                                {% set is_best_theoretical = (result.best_theoretical_params and row.window == result.best_theoretical_params.window and row.step == result.best_theoretical_params.step) %}
+                                <tr class="{% if is_best_hit_rate %}bg-green-100 border-2 border-green-500{% elif is_best_theoretical %}bg-purple-100 border-2 border-purple-500{% elif loop.index <= 3 %}bg-yellow-50{% endif %}">
+                                    <td class="border border-gray-300 px-2 py-2 text-xs text-center font-bold">
+                                        {% if is_best_hit_rate %}🏆
+                                        {% elif is_best_theoretical %}🎯
+                                        {% elif loop.index == 1 %}🥇
+                                        {% elif loop.index == 2 %}🥈
+                                        {% elif loop.index == 3 %}🥉
+                                        {% else %}{{ loop.index }}{% endif %}
+                                    </td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs">{{ row.window }}</td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs">{{ row.step }}</td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs">{{ row.adjusted_window }}</td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs font-bold 
+                                        {% if row.pb_hit_probability > 0.05 %}text-green-600
+                                        {% elif row.pb_hit_probability > 0.04 %}text-yellow-600
+                                        {% else %}text-red-600{% endif %}">
+                                        {{ "%.4f"|format(row.pb_hit_probability) }}
+                                    </td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs">{{ row.total_predictions }}</td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs">{{ row.total_pb_hits }}</td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs 
+                                        {% if row.performance_ratio > 1.2 %}text-green-600
+                                        {% elif row.performance_ratio > 0.8 %}text-yellow-600
+                                        {% else %}text-red-600{% endif %}">
+                                        {{ "%.2f"|format(row.performance_ratio) }}
+                                    </td>
+                                    <td class="border border-gray-300 px-2 py-2 text-xs">{{ "%.1f"|format(row.compute_time) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 可视化图表 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">红球命中率热力图</h2>
+                <canvas id="heatmapChart" class="w-full h-96"></canvas>
+            </div>
+
+            <script>
+                // 准备热力图数据
+                const results = {{ result.optimization_results | tojson }};
+                const windowValues = [...new Set(results.map(r => r.window))].sort((a, b) => a - b);
+                const stepValues = [...new Set(results.map(r => r.step))].sort((a, b) => a - b);
+                
+                const heatmapData = [];
+                stepValues.forEach((step, stepIndex) => {
+                    windowValues.forEach((window, windowIndex) => {
+                        const result = results.find(r => r.window === window && r.step === step);
+                        if (result) {
+                            heatmapData.push({
+                                x: windowIndex,
+                                y: stepIndex,
+                                v: result.pb_hit_probability
+                            });
+                        }
+                    });
+                });
+
+                // 创建热力图
+                const ctx = document.getElementById('heatmapChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: '红球命中率',
+                            data: heatmapData,
+                            backgroundColor: function(context) {
+                                const value = context.parsed.v;
+                                const alpha = Math.min(value * 20, 1); // 调整透明度
+                                return `rgba(255, 99, 132, ${alpha})`;
+                            },
+                            pointRadius: function(context) {
+                                const value = context.parsed.v;
+                                return Math.max(value * 200, 3); // 调整点的大小
+                            }
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: { display: true, text: '回测窗口' },
+                                ticks: {
+                                    callback: function(value, index) {
+                                        return windowValues[Math.round(value)] || '';
+                                    }
+                                }
+                            },
+                            y: {
+                                title: { display: true, text: '迭代步长' },
+                                ticks: {
+                                    callback: function(value, index) {
+                                        return stepValues[Math.round(value)] || '';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: true, position: 'top' },
+                            title: { display: true, text: '参数组合的红球命中率分布' },
+                            tooltip: {
+                                callbacks: {
+                                    title: function(context) {
+                                        const point = context[0];
+                                        return `窗口: ${windowValues[Math.round(point.parsed.x)]}, 步长: ${stepValues[Math.round(point.parsed.y)]}`;
+                                    },
+                                    label: function(context) {
+                                        return `红球命中率: ${context.parsed.v.toFixed(4)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        {% endif %}
+
+    </div>
+</body>
+</html>

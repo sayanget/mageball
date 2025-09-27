@@ -8,8 +8,11 @@ import requests
 import io
 import json
 from datetime import datetime, timedelta
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'mageball_secret_key_2025'
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # LotteryAnalyzer 类（适配 Mega Millions）
 WHITE_MAX = 70
@@ -164,7 +167,7 @@ class LotteryAnalyzer:
         for c in self.white_cols + [self.pb_col]:
             df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0).astype('Int64')
 
-        # 日期过滤
+        # 日期过滤 - 2017年10月31日是Mega Millions规则变更日期
         if not df['date'].isna().all():
             initial_rows = len(df)
             df = df[df['date'] >= '2017-10-31']
@@ -184,7 +187,7 @@ class LotteryAnalyzer:
         self.df = df
         return self
 
-    def backtest_strategy(self, strategy: str = 'hybrid', n_tickets: int = 10, window: int = 200, constraints: Optional[Dict] = None, random_state: Optional[int] = None, step: int = 20) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
+    def backtest_strategy(self, strategy: str = 'hybrid', n_tickets: int = 10, window: int = 200, constraints: Optional[Dict] = None, random_state: Optional[int] = None, step: int = 20) -> Tuple[pd.DataFrame, pd.Series, pd.Series, Dict]:
         if self.df is None:
             raise ValueError("请先使用 load_csv() 加载数据。")
         window = min(window, max(50, len(self.df) // 10))
@@ -195,6 +198,12 @@ class LotteryAnalyzer:
         records = []
         white_perf = pd.Series(0, index=range(1, WHITE_MAX + 1), dtype=int)
         pb_perf = pd.Series(0, index=range(1, PB_MAX + 1), dtype=int)
+        
+        # 新增：红球命中概率统计
+        total_predictions = 0
+        total_pb_hits = 0
+        pb_hit_stats = {}
+        
         for t in range(window, len(self.df), step):
             train = self.df.iloc[:t].copy()
             test_row = self.df.iloc[t]
@@ -208,23 +217,42 @@ class LotteryAnalyzer:
             truth_pb = test_row[self.pb_col]
             if pd.isna(truth_pb) or truth_pb == 0:
                 continue
+            
             for _, row in picks.iterrows():
                 whites = set([row['n1'], row['n2'], row['n3'], row['n4'], row['n5']])
                 pb = row['megaball']
+                white_matches = len(whites & truth_whites)
                 pb_match = int(pb == truth_pb)
-                if pb_match == 1:
-                    white_matches = len(whites & truth_whites)
-                    records.append({"t": t, "white_matches": white_matches, "pb_match": pb_match})
+                
+                # 记录所有的结果（不仅仅是红球命中的）
+                records.append({"t": t, "white_matches": white_matches, "pb_match": pb_match})
+                
+                # 统计红球命中情况
+                total_predictions += 1
+                if pb_match:
+                    total_pb_hits += 1
+                    pb_perf[pb] += 1
+                
+                # 统计白球表现
                 for w in whites:
                     if w in truth_whites:
                         white_perf[w] += 1
-                if pb_match:
-                    pb_perf[pb] += 1
+        
+        # 计算红球整体命中概率
+        pb_hit_probability = total_pb_hits / total_predictions if total_predictions > 0 else 0
+        pb_hit_stats = {
+            'total_predictions': total_predictions,
+            'total_pb_hits': total_pb_hits,
+            'pb_hit_probability': pb_hit_probability,
+            'theoretical_probability': 1/PB_MAX,  # 理论概率 1/25
+            'performance_ratio': pb_hit_probability / (1/PB_MAX) if (1/PB_MAX) > 0 else 0
+        }
+        
         out = pd.DataFrame(records)
         summary = out.groupby(["white_matches", "pb_match"]).size().rename("count").reset_index()
         if summary.empty:
-            summary = pd.DataFrame({"white_matches": [0], "pb_match": [1], "count": [0]})
-        return summary, white_perf, pb_perf
+            summary = pd.DataFrame({"white_matches": [0], "pb_match": [0], "count": [0]})
+        return summary, white_perf, pb_perf, pb_hit_stats
 
     @lru_cache(maxsize=128)
     def _compute_features_cached(self, recent_window: int, data_hash: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -271,7 +299,7 @@ class LotteryAnalyzer:
         fw, fpb = self._compute_features_cached(recent_window, data_hash)
 
         if use_backtest:
-            _, white_perf, pb_perf = self.backtest_strategy(strategy='hybrid', n_tickets=10, window=backtest_window, step=20)
+            _, white_perf, pb_perf, _ = self.backtest_strategy(strategy='hybrid', n_tickets=10, window=backtest_window, step=20)
             fw['performance'] = white_perf
             fpb['performance'] = pb_perf
         else:
@@ -556,12 +584,16 @@ def index():
     chart_data = None
     picks_file = None
     latest_draw_info = get_latest_draw_info()
+    optimization_progress = None
 
     if request.method == 'POST':
         try:
             window = int(request.form.get('window', 200))
             n_tickets = int(request.form.get('n_tickets', 10))
             step = int(request.form.get('step', 20))
+            
+            # 是否启用参数优化
+            enable_optimization = request.form.get('enable_optimization', 'off') == 'on'
 
             file = request.files.get('csv_file')
             la = LotteryAnalyzer()
@@ -575,14 +607,102 @@ def index():
             else:
                 la.load_csv(url='https://data.ny.gov/api/views/5xaw-6ayf/rows.csv')
 
+            start_time = datetime.now()
+            
+            # 如果启用参数优化，先进行参数优化分析
+            if enable_optimization:
+                print("开始参数优化分析...")
+                
+                # 参数优化范围（可以根据需要调整）
+                window_range = range(100, 301, 50)  # 100, 150, 200, 250, 300
+                step_range = range(10, 51, 10)      # 10, 20, 30, 40, 50
+                
+                optimization_results = []
+                best_pb_hit_rate = 0
+                best_params = None
+                best_theoretical_ratio = 0
+                best_theoretical_params = None
+                
+                total_combinations = len(list(window_range)) * len(list(step_range))
+                current_combination = 0
+                
+                for opt_window in window_range:
+                    for opt_step in step_range:
+                        current_combination += 1
+                        progress = (current_combination / total_combinations) * 100
+                        
+                        # 发送实时进度更新
+                        socketio.emit('progress_update', {
+                            'current': current_combination,
+                            'total': total_combinations,
+                            'progress': progress,
+                            'status': f'正在测试参数组合: 窗口={opt_window}, 步长={opt_step}'
+                        })
+                        
+                        # 添加短暂延迟以确保前端能接收到更新
+                        socketio.sleep(0.1)
+                        
+                        print(f"参数优化进度: {progress:.1f}% ({current_combination}/{total_combinations})")
+                        
+                        try:
+                            # 调整窗口大小
+                            adjusted_window = min(opt_window, max(50, len(la.df) // 10))
+                            
+                            # 进行回测
+                            summary, _, _, pb_hit_stats = la.backtest_strategy(
+                                strategy='hybrid', 
+                                n_tickets=n_tickets, 
+                                window=adjusted_window, 
+                                step=opt_step
+                            )
+                            
+                            # 记录结果
+                            result_entry = {
+                                'window': opt_window,
+                                'step': opt_step,
+                                'adjusted_window': adjusted_window,
+                                'pb_hit_probability': pb_hit_stats['pb_hit_probability'],
+                                'performance_ratio': pb_hit_stats['performance_ratio']
+                            }
+                            
+                            optimization_results.append(result_entry)
+                            
+                            # 更新最佳红球命中率参数
+                            if pb_hit_stats['pb_hit_probability'] > best_pb_hit_rate:
+                                best_pb_hit_rate = pb_hit_stats['pb_hit_probability']
+                                best_params = result_entry.copy()
+                            
+                            # 更新最佳理论概率表现参数
+                            if pb_hit_stats['performance_ratio'] > best_theoretical_ratio:
+                                best_theoretical_ratio = pb_hit_stats['performance_ratio']
+                                best_theoretical_params = result_entry.copy()
+                                
+                        except Exception as e:
+                            print(f"参数组合 window={opt_window}, step={opt_step} 测试失败: {e}")
+                            continue
+                
+                # 使用最佳参数进行最终分析
+                if best_params:
+                    window = best_params['window']
+                    step = best_params['step']
+                    print(f"使用最佳参数: window={window}, step={step}, 红球命中率={best_params['pb_hit_probability']:.4f}")
+                    
+                    optimization_progress = {
+                        'total_combinations': total_combinations,
+                        'best_params': best_params,
+                        'best_theoretical_params': best_theoretical_params,
+                        'optimization_results': optimization_results[:10]  # 只显示前10个结果
+                    }
+                else:
+                    print("参数优化失败，使用默认参数")
+
             window = min(window, max(50, len(la.df) // 10))
             print(f"路由中调整窗口大小为：{window}")
 
-            start_time = datetime.now()
             la.compute_features(recent_window=50, backtest_window=window, use_backtest=True)
             compute_time = (datetime.now() - start_time).total_seconds()
 
-            summary, _, _ = la.backtest_strategy(strategy='hybrid', n_tickets=n_tickets, window=window, step=step)
+            summary, _, _, pb_hit_stats = la.backtest_strategy(strategy='hybrid', n_tickets=n_tickets, window=window, step=step)
             top_numbers = la.rank_numbers(topn=20)
             picks = la.generate_picks(
                 n_tickets=5,
@@ -600,7 +720,9 @@ def index():
                     "window": window,
                     "n_tickets": n_tickets, 
                     "step": step,
-                    "compute_time": f"{compute_time:.2f} 秒"
+                    "compute_time": f"{compute_time:.2f} 秒",
+                    "optimization_enabled": enable_optimization,
+                    "optimization_progress": optimization_progress
                 }
             )
 
@@ -640,8 +762,15 @@ def index():
                 'compute_time': f"{compute_time:.2f} 秒",
                 'summary': summary.to_dict(orient='records'),
                 'top_numbers': top_numbers.to_dict(orient='records'),
-                'picks': picks.to_dict(orient='records')
+                'picks': picks.to_dict(orient='records'),
+                'pb_hit_stats': pb_hit_stats,
+                'optimization_progress': optimization_progress,
+                'final_params': {'window': window, 'step': step} if enable_optimization else None
             }
+            
+            # 发送分析完成事件
+            if enable_optimization:
+                socketio.emit('analysis_complete', {'status': 'success'})
 
         except Exception as e:
             error = f"错误：{str(e)}"
@@ -680,8 +809,141 @@ def prediction_history():
                              backtest_results=[],
                              performance_summary={})
 
+@app.route('/parameter_optimization', methods=['GET', 'POST'])
+def parameter_optimization():
+    """参数优化分析 - 找到红球命中率最好的回测方案"""
+    if request.method == 'GET':
+        return render_template('parameter_optimization.html')
+    
+    try:
+        # 获取参数范围
+        window_start = int(request.form.get('window_start', 100))
+        window_end = int(request.form.get('window_end', 300))
+        window_step = int(request.form.get('window_step', 50))
+        step_start = int(request.form.get('step_start', 10))
+        step_end = int(request.form.get('step_end', 50))
+        step_step = int(request.form.get('step_step', 10))
+        n_tickets = int(request.form.get('n_tickets', 10))
+        
+        # 加载数据
+        la = LotteryAnalyzer()
+        file = request.files.get('csv_file')
+        if file and file.filename:
+            upload_dir = 'uploads'
+            os.makedirs(upload_dir, exist_ok=True)
+            file_path = os.path.join(upload_dir, 'mega_millions_clean.csv')
+            file.save(file_path)
+            la.load_csv(file_path=file_path)
+        else:
+            la.load_csv(url='https://data.ny.gov/api/views/5xaw-6ayf/rows.csv')
+        
+        # 参数组合列表
+        window_range = range(window_start, window_end + 1, window_step)
+        step_range = range(step_start, step_end + 1, step_step)
+        
+        optimization_results = []
+        best_pb_hit_rate = 0
+        best_params = None
+        best_theoretical_ratio = 0
+        best_theoretical_params = None
+        
+        total_combinations = len(list(window_range)) * len(list(step_range))
+        current_combination = 0
+        
+        for window in window_range:
+            for step in step_range:
+                current_combination += 1
+                print(f"测试参数组合 {current_combination}/{total_combinations}: window={window}, step={step}")
+                
+                try:
+                    # 调整窗口大小
+                    adjusted_window = min(window, max(50, len(la.df) // 10))
+                    
+                    # 进行回测
+                    start_time = datetime.now()
+                    summary, _, _, pb_hit_stats = la.backtest_strategy(
+                        strategy='hybrid', 
+                        n_tickets=n_tickets, 
+                        window=adjusted_window, 
+                        step=step
+                    )
+                    compute_time = (datetime.now() - start_time).total_seconds()
+                    
+                    # 记录结果
+                    result = {
+                        'window': window,
+                        'step': step,
+                        'adjusted_window': adjusted_window,
+                        'pb_hit_probability': pb_hit_stats['pb_hit_probability'],
+                        'total_predictions': pb_hit_stats['total_predictions'],
+                        'total_pb_hits': pb_hit_stats['total_pb_hits'],
+                        'performance_ratio': pb_hit_stats['performance_ratio'],
+                        'compute_time': compute_time,
+                        'summary_count': len(summary)
+                    }
+                    
+                    optimization_results.append(result)
+                    
+                    # 更新最佳红球命中率参数
+                    if pb_hit_stats['pb_hit_probability'] > best_pb_hit_rate:
+                        best_pb_hit_rate = pb_hit_stats['pb_hit_probability']
+                        best_params = {
+                            'window': window,
+                            'step': step,
+                            'adjusted_window': adjusted_window,
+                            'pb_hit_probability': pb_hit_stats['pb_hit_probability'],
+                            'performance_ratio': pb_hit_stats['performance_ratio']
+                        }
+                    
+                    # 更新最佳理论概率表现参数
+                    if pb_hit_stats['performance_ratio'] > best_theoretical_ratio:
+                        best_theoretical_ratio = pb_hit_stats['performance_ratio']
+                        best_theoretical_params = {
+                            'window': window,
+                            'step': step,
+                            'adjusted_window': adjusted_window,
+                            'pb_hit_probability': pb_hit_stats['pb_hit_probability'],
+                            'performance_ratio': pb_hit_stats['performance_ratio']
+                        }
+                    
+                except Exception as e:
+                    print(f"参数组合 window={window}, step={step} 测试失败: {e}")
+                    optimization_results.append({
+                        'window': window,
+                        'step': step,
+                        'adjusted_window': 0,
+                        'pb_hit_probability': 0,
+                        'total_predictions': 0,
+                        'total_pb_hits': 0,
+                        'performance_ratio': 0,
+                        'compute_time': 0,
+                        'summary_count': 0,
+                        'error': str(e)
+                    })
+        
+        # 排序结果
+        optimization_results.sort(key=lambda x: x['pb_hit_probability'], reverse=True)
+        
+        result_data = {
+            'optimization_results': optimization_results,
+            'best_params': best_params,
+            'best_theoretical_params': best_theoretical_params,
+            'total_combinations': total_combinations,
+            'data_rows': len(la.df),
+            'parameters': {
+                'window_range': f"{window_start}-{window_end} (步长{window_step})",
+                'step_range': f"{step_start}-{step_end} (步长{step_step})",
+                'n_tickets': n_tickets
+            }
+        }
+        
+        return render_template('parameter_optimization.html', result=result_data)
+        
+    except Exception as e:
+        return render_template('parameter_optimization.html', error=f"错误：{str(e)}")
+
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') != 'production'
-    app.run(host='0.0.0.0', port=port, debug=debug)
+    socketio.run(app, host='0.0.0.0', port=port, debug=debug)

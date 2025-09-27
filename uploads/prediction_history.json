@@ -68,5 +68,1065 @@
       0.2,
       0.2
     ]
+  },
+  {
+    "timestamp": "2025-09-26T23:05:09.773126",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 20,
+      "compute_time": "10.69 秒"
+    },
+    "predictions": [
+      {
+        "n1": 18,
+        "n2": 20,
+        "n3": 25,
+        "n4": 45,
+        "n5": 64,
+        "megaball": 7
+      },
+      {
+        "n1": 6,
+        "n2": 10,
+        "n3": 11,
+        "n4": 27,
+        "n5": 68,
+        "megaball": 14
+      },
+      {
+        "n1": 19,
+        "n2": 24,
+        "n3": 30,
+        "n4": 56,
+        "n5": 59,
+        "megaball": 14
+      },
+      {
+        "n1": 16,
+        "n2": 31,
+        "n3": 37,
+        "n4": 38,
+        "n5": 69,
+        "megaball": 25
+      },
+      {
+        "n1": 15,
+        "n2": 20,
+        "n3": 21,
+        "n4": 48,
+        "n5": 62,
+        "megaball": 20
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-26T23:05:18.265488",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 20,
+      "compute_time": "14.10 秒"
+    },
+    "predictions": [
+      {
+        "n1": 17,
+        "n2": 20,
+        "n3": 25,
+        "n4": 44,
+        "n5": 64,
+        "megaball": 7
+      },
+      {
+        "n1": 6,
+        "n2": 10,
+        "n3": 11,
+        "n4": 27,
+        "n5": 68,
+        "megaball": 14
+      },
+      {
+        "n1": 17,
+        "n2": 34,
+        "n3": 38,
+        "n4": 53,
+        "n5": 55,
+        "megaball": 22
+      },
+      {
+        "n1": 18,
+        "n2": 24,
+        "n3": 29,
+        "n4": 56,
+        "n5": 59,
+        "megaball": 14
+      },
+      {
+        "n1": 16,
+        "n2": 31,
+        "n3": 37,
+        "n4": 38,
+        "n5": 69,
+        "megaball": 25
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-26T23:05:32.888273",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 20,
+      "compute_time": "19.76 秒"
+    },
+    "predictions": [
+      {
+        "n1": 17,
+        "n2": 20,
+        "n3": 25,
+        "n4": 44,
+        "n5": 64,
+        "megaball": 6
+      },
+      {
+        "n1": 5,
+        "n2": 10,
+        "n3": 11,
+        "n4": 28,
+        "n5": 68,
+        "megaball": 13
+      },
+      {
+        "n1": 8,
+        "n2": 31,
+        "n3": 38,
+        "n4": 41,
+        "n5": 58,
+        "megaball": 18
+      },
+      {
+        "n1": 5,
+        "n2": 6,
+        "n3": 11,
+        "n4": 57,
+        "n5": 70,
+        "megaball": 11
+      },
+      {
+        "n1": 5,
+        "n2": 16,
+        "n3": 17,
+        "n4": 24,
+        "n5": 45,
+        "megaball": 12
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-26T23:05:33.039860",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 20,
+      "compute_time": "19.70 秒"
+    },
+    "predictions": [
+      {
+        "n1": 17,
+        "n2": 20,
+        "n3": 25,
+        "n4": 46,
+        "n5": 64,
+        "megaball": 7
+      },
+      {
+        "n1": 5,
+        "n2": 10,
+        "n3": 11,
+        "n4": 28,
+        "n5": 68,
+        "megaball": 13
+      },
+      {
+        "n1": 17,
+        "n2": 35,
+        "n3": 39,
+        "n4": 53,
+        "n5": 56,
+        "megaball": 22
+      },
+      {
+        "n1": 5,
+        "n2": 6,
+        "n3": 11,
+        "n4": 44,
+        "n5": 57,
+        "megaball": 25
+      },
+      {
+        "n1": 5,
+        "n2": 16,
+        "n3": 17,
+        "n4": 46,
+        "n5": 53,
+        "megaball": 11
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-26T23:29:30.318945",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 40,
+      "compute_time": "7.32 秒"
+    },
+    "predictions": [
+      {
+        "n1": 15,
+        "n2": 18,
+        "n3": 25,
+        "n4": 45,
+        "n5": 64,
+        "megaball": 5
+      },
+      {
+        "n1": 6,
+        "n2": 11,
+        "n3": 28,
+        "n4": 33,
+        "n5": 68,
+        "megaball": 9
+      },
+      {
+        "n1": 17,
+        "n2": 34,
+        "n3": 39,
+        "n4": 53,
+        "n5": 56,
+        "megaball": 23
+      },
+      {
+        "n1": 19,
+        "n2": 24,
+        "n3": 30,
+        "n4": 56,
+        "n5": 59,
+        "megaball": 14
+      },
+      {
+        "n1": 8,
+        "n2": 20,
+        "n3": 31,
+        "n4": 38,
+        "n5": 41,
+        "megaball": 22
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-26T23:36:58.655138",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 40,
+      "compute_time": "7.16 秒"
+    },
+    "predictions": [
+      {
+        "n1": 6,
+        "n2": 11,
+        "n3": 28,
+        "n4": 34,
+        "n5": 69,
+        "megaball": 9
+      },
+      {
+        "n1": 19,
+        "n2": 24,
+        "n3": 30,
+        "n4": 56,
+        "n5": 59,
+        "megaball": 13
+      },
+      {
+        "n1": 9,
+        "n2": 20,
+        "n3": 31,
+        "n4": 38,
+        "n5": 41,
+        "megaball": 22
+      },
+      {
+        "n1": 5,
+        "n2": 7,
+        "n3": 12,
+        "n4": 44,
+        "n5": 57,
+        "megaball": 25
+      },
+      {
+        "n1": 5,
+        "n2": 16,
+        "n3": 18,
+        "n4": 46,
+        "n5": 53,
+        "megaball": 11
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-26T23:55:07.071722",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 40,
+      "compute_time": "120.45 秒",
+      "optimization_enabled": true,
+      "optimization_progress": {
+        "total_combinations": 25,
+        "best_params": {
+          "window": 150,
+          "step": 40,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.06315789473684211,
+          "performance_ratio": 1.5789473684210527
+        },
+        "best_theoretical_params": {
+          "window": 150,
+          "step": 40,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.06315789473684211,
+          "performance_ratio": 1.5789473684210527
+        },
+        "optimization_results": [
+          {
+            "window": 100,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04533333333333334,
+            "performance_ratio": 1.1333333333333333
+          },
+          {
+            "window": 100,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.05,
+            "performance_ratio": 1.25
+          },
+          {
+            "window": 100,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04,
+            "performance_ratio": 1.0
+          },
+          {
+            "window": 100,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.042105263157894736,
+            "performance_ratio": 1.0526315789473684
+          },
+          {
+            "window": 100,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04666666666666667,
+            "performance_ratio": 1.1666666666666667
+          },
+          {
+            "window": 150,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.032,
+            "performance_ratio": 0.8
+          },
+          {
+            "window": 150,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.031578947368421054,
+            "performance_ratio": 0.7894736842105263
+          },
+          {
+            "window": 150,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.032,
+            "performance_ratio": 0.8
+          },
+          {
+            "window": 150,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.06315789473684211,
+            "performance_ratio": 1.5789473684210527
+          },
+          {
+            "window": 150,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04,
+            "performance_ratio": 1.0
+          }
+        ]
+      }
+    },
+    "predictions": [
+      {
+        "n1": 18,
+        "n2": 20,
+        "n3": 25,
+        "n4": 46,
+        "n5": 63,
+        "megaball": 6
+      },
+      {
+        "n1": 5,
+        "n2": 10,
+        "n3": 11,
+        "n4": 28,
+        "n5": 68,
+        "megaball": 13
+      },
+      {
+        "n1": 19,
+        "n2": 24,
+        "n3": 30,
+        "n4": 58,
+        "n5": 59,
+        "megaball": 22
+      },
+      {
+        "n1": 16,
+        "n2": 31,
+        "n3": 32,
+        "n4": 38,
+        "n5": 69,
+        "megaball": 14
+      },
+      {
+        "n1": 15,
+        "n2": 20,
+        "n3": 21,
+        "n4": 62,
+        "n5": 68,
+        "megaball": 19
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-27T00:05:04.799730",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 20,
+      "compute_time": "207.46 秒",
+      "optimization_enabled": true,
+      "optimization_progress": {
+        "total_combinations": 25,
+        "best_params": {
+          "window": 200,
+          "step": 20,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.05526315789473684,
+          "performance_ratio": 1.381578947368421
+        },
+        "best_theoretical_params": {
+          "window": 200,
+          "step": 20,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.05526315789473684,
+          "performance_ratio": 1.381578947368421
+        },
+        "optimization_results": [
+          {
+            "window": 100,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.024,
+            "performance_ratio": 0.6
+          },
+          {
+            "window": 100,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.02631578947368421,
+            "performance_ratio": 0.6578947368421052
+          },
+          {
+            "window": 100,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.048,
+            "performance_ratio": 1.2
+          },
+          {
+            "window": 100,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.031578947368421054,
+            "performance_ratio": 0.7894736842105263
+          },
+          {
+            "window": 100,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04,
+            "performance_ratio": 1.0
+          },
+          {
+            "window": 150,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.03866666666666667,
+            "performance_ratio": 0.9666666666666667
+          },
+          {
+            "window": 150,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.02368421052631579,
+            "performance_ratio": 0.5921052631578947
+          },
+          {
+            "window": 150,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.02,
+            "performance_ratio": 0.5
+          },
+          {
+            "window": 150,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.03684210526315789,
+            "performance_ratio": 0.9210526315789472
+          },
+          {
+            "window": 150,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.02666666666666667,
+            "performance_ratio": 0.6666666666666667
+          }
+        ]
+      }
+    },
+    "predictions": [
+      {
+        "n1": 17,
+        "n2": 19,
+        "n3": 25,
+        "n4": 45,
+        "n5": 64,
+        "megaball": 6
+      },
+      {
+        "n1": 6,
+        "n2": 10,
+        "n3": 11,
+        "n4": 27,
+        "n5": 68,
+        "megaball": 13
+      },
+      {
+        "n1": 14,
+        "n2": 17,
+        "n3": 39,
+        "n4": 40,
+        "n5": 62,
+        "megaball": 3
+      },
+      {
+        "n1": 18,
+        "n2": 24,
+        "n3": 29,
+        "n4": 56,
+        "n5": 59,
+        "megaball": 13
+      },
+      {
+        "n1": 16,
+        "n2": 31,
+        "n3": 37,
+        "n4": 38,
+        "n5": 69,
+        "megaball": 25
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-27T00:06:21.361559",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 40,
+      "compute_time": "215.40 秒",
+      "optimization_enabled": true,
+      "optimization_progress": {
+        "total_combinations": 25,
+        "best_params": {
+          "window": 250,
+          "step": 40,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.06842105263157895,
+          "performance_ratio": 1.7105263157894737
+        },
+        "best_theoretical_params": {
+          "window": 250,
+          "step": 40,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.06842105263157895,
+          "performance_ratio": 1.7105263157894737
+        },
+        "optimization_results": [
+          {
+            "window": 100,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04,
+            "performance_ratio": 1.0
+          },
+          {
+            "window": 100,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.03684210526315789,
+            "performance_ratio": 0.9210526315789472
+          },
+          {
+            "window": 100,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.052,
+            "performance_ratio": 1.2999999999999998
+          },
+          {
+            "window": 100,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.06315789473684211,
+            "performance_ratio": 1.5789473684210527
+          },
+          {
+            "window": 100,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04,
+            "performance_ratio": 1.0
+          },
+          {
+            "window": 150,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04,
+            "performance_ratio": 1.0
+          },
+          {
+            "window": 150,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.031578947368421054,
+            "performance_ratio": 0.7894736842105263
+          },
+          {
+            "window": 150,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.028,
+            "performance_ratio": 0.7
+          },
+          {
+            "window": 150,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.03684210526315789,
+            "performance_ratio": 0.9210526315789472
+          },
+          {
+            "window": 150,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04666666666666667,
+            "performance_ratio": 1.1666666666666667
+          }
+        ]
+      }
+    },
+    "predictions": [
+      {
+        "n1": 15,
+        "n2": 18,
+        "n3": 25,
+        "n4": 46,
+        "n5": 64,
+        "megaball": 4
+      },
+      {
+        "n1": 5,
+        "n2": 10,
+        "n3": 28,
+        "n4": 33,
+        "n5": 68,
+        "megaball": 9
+      },
+      {
+        "n1": 7,
+        "n2": 14,
+        "n3": 39,
+        "n4": 40,
+        "n5": 62,
+        "megaball": 13
+      },
+      {
+        "n1": 17,
+        "n2": 34,
+        "n3": 39,
+        "n4": 53,
+        "n5": 56,
+        "megaball": 22
+      },
+      {
+        "n1": 8,
+        "n2": 20,
+        "n3": 31,
+        "n4": 38,
+        "n5": 41,
+        "megaball": 22
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "timestamp": "2025-09-27T00:10:07.012582",
+    "strategy": "hybrid",
+    "constraints": {
+      "sum_range": [
+        100,
+        200
+      ],
+      "odd_even": [
+        2,
+        4
+      ],
+      "min_spread": 10
+    },
+    "additional_info": {
+      "window": 82,
+      "n_tickets": 10,
+      "step": 40,
+      "compute_time": "118.84 秒",
+      "optimization_enabled": true,
+      "optimization_progress": {
+        "total_combinations": 25,
+        "best_params": {
+          "window": 100,
+          "step": 40,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.07368421052631578,
+          "performance_ratio": 1.8421052631578945
+        },
+        "best_theoretical_params": {
+          "window": 100,
+          "step": 40,
+          "adjusted_window": 82,
+          "pb_hit_probability": 0.07368421052631578,
+          "performance_ratio": 1.8421052631578945
+        },
+        "optimization_results": [
+          {
+            "window": 100,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.02666666666666667,
+            "performance_ratio": 0.6666666666666667
+          },
+          {
+            "window": 100,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04473684210526316,
+            "performance_ratio": 1.118421052631579
+          },
+          {
+            "window": 100,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.032,
+            "performance_ratio": 0.8
+          },
+          {
+            "window": 100,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.07368421052631578,
+            "performance_ratio": 1.8421052631578945
+          },
+          {
+            "window": 100,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.02,
+            "performance_ratio": 0.5
+          },
+          {
+            "window": 150,
+            "step": 10,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.036,
+            "performance_ratio": 0.8999999999999999
+          },
+          {
+            "window": 150,
+            "step": 20,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04736842105263158,
+            "performance_ratio": 1.1842105263157894
+          },
+          {
+            "window": 150,
+            "step": 30,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.04,
+            "performance_ratio": 1.0
+          },
+          {
+            "window": 150,
+            "step": 40,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.031578947368421054,
+            "performance_ratio": 0.7894736842105263
+          },
+          {
+            "window": 150,
+            "step": 50,
+            "adjusted_window": 82,
+            "pb_hit_probability": 0.02666666666666667,
+            "performance_ratio": 0.6666666666666667
+          }
+        ]
+      }
+    },
+    "predictions": [
+      {
+        "n1": 15,
+        "n2": 17,
+        "n3": 25,
+        "n4": 45,
+        "n5": 64,
+        "megaball": 4
+      },
+      {
+        "n1": 17,
+        "n2": 34,
+        "n3": 38,
+        "n4": 53,
+        "n5": 56,
+        "megaball": 22
+      },
+      {
+        "n1": 18,
+        "n2": 24,
+        "n3": 29,
+        "n4": 56,
+        "n5": 59,
+        "megaball": 13
+      },
+      {
+        "n1": 16,
+        "n2": 31,
+        "n3": 37,
+        "n4": 38,
+        "n5": 69,
+        "megaball": 25
+      },
+      {
+        "n1": 15,
+        "n2": 20,
+        "n3": 48,
+        "n4": 53,
+        "n5": 63,
+        "megaball": 25
+      }
+    ],
+    "data_rows_used": 825,
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ]
   }
 ]
